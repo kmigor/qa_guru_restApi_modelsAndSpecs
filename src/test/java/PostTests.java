@@ -16,12 +16,11 @@ public class PostTests extends TestBase {
         given()
                 .body("{\"username\": \"Rick\",\"email\": \"rickrolled@example.com\",\"password\": \"Astley\"}")
                 .contentType(JSON)
-
-                .when()
+        .when()
                 .log().uri()
                 .post("/login")
 
-                .then()
+        .then()
                 .log().status()
                 .log().body()
                 .statusCode(400)
@@ -34,12 +33,11 @@ public class PostTests extends TestBase {
         given()
                 .body("{\"email\": \"emma.wong@reqres.in\",\"password\": \"Astley\"}")
                 .contentType(JSON)
-
-                .when()
+        .when()
                 .log().uri()
                 .post("/register")
 
-                .then()
+        .then()
                 .log().status()
                 .log().body()
                 .statusCode(200)

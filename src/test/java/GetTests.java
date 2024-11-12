@@ -14,11 +14,11 @@ public class GetTests extends TestBase {
     void getUsersListTest() {
         given()
 
-                .when()
+        .when()
                 .log().uri()
                 .get("/users")
 
-                .then()
+        .then()
                 .log().status()
                 .log().body()
                 .body("page", is(1))
@@ -37,11 +37,11 @@ public class GetTests extends TestBase {
     void getUserByIdSuccessTest() {
         given()
 
-                .when()
+        .when()
                 .log().uri()
                 .get("/users/" + existentId)
 
-                .then()
+        .then()
                 .log().status()
                 .log().body()
                 .body("data.id", is(1))
@@ -56,11 +56,11 @@ public class GetTests extends TestBase {
     void getUserByIdNotFoundTest() {
         given()
 
-                .when()
+        .when()
                 .log().uri()
                 .get("/users/" + nonExistentId)
 
-                .then()
+        .then()
                 .log().status()
                 .log().body()
                 .statusCode(404);
