@@ -1,6 +1,5 @@
 package tests;
 
-import io.qameta.allure.restassured.AllureRestAssured;
 import models.LoginErrorResponseModel;
 import models.LoginRequestModel;
 import models.RegisterRequestModel;
@@ -9,13 +8,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 
-import static helpers.CustomAllureListener.withCustomTemplates;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static specs.Specs.*;
 
 public class PostTests extends TestBase {
