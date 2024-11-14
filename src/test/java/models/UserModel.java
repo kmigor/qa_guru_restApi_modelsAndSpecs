@@ -4,9 +4,7 @@ import lombok.Data;
 
 @Data
 public class UserModel {
-
     private Data data = new Data();
-
     private Support support = new Support();
 
     @lombok.Data

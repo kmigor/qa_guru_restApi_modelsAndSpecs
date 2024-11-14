@@ -1,16 +1,15 @@
 package tests;
 
-import io.qameta.allure.restassured.AllureRestAssured;
 import models.UserListResponseModel;
 import models.UserModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static helpers.CustomAllureListener.withCustomTemplates;
+
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
+import static specs.Specs.*;
 
 public class GetTests extends TestBase {
 
@@ -20,16 +19,11 @@ public class GetTests extends TestBase {
 
         UserListResponseModel userListResponseModel = step("Делаем запрос получения списка пользователей", () ->
 
-        given()
-                .filter(withCustomTemplates())
-        .when()
-                .log().uri()
+        given(getRequestSpec)
                 .get("/users")
 
         .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
+                .spec(getSuccessResponseSpec)
                 .extract().as(UserListResponseModel.class));
 
         step("Проверяем, что в ответе пришел список из 12 человек, и почту первого в списке", ()-> {
@@ -53,15 +47,11 @@ public class GetTests extends TestBase {
         expectedModel.getSupport().setText("Tired of writing endless social media content? Let Content Caddy generate it for you.");
 
         UserModel actualModel = step("Делаем запрос на получения первого в списке человека", () ->
-        given()
-                .filter(withCustomTemplates())
-        .when()
-                .log().uri()
+        given(getRequestSpec)
                 .get("/users/" + 1)
 
         .then()
-                .log().status()
-                .log().body()
+                .spec(getSuccessResponseSpec)
                 .extract().as(UserModel.class));
 
         step("Проверяем каждое поле первого человека", ()-> {
@@ -82,16 +72,11 @@ public class GetTests extends TestBase {
     @DisplayName("Проверка получения несуществующего пользователя")
     void getUserByIdNotFoundTest() {
         UserModel actualUser = step("Делаем запрос человека с несуществующим id", () ->
-        given()
-                .filter(withCustomTemplates())
-        .when()
-                .log().uri()
+        given(getRequestSpec)
                 .get("/users/" + 0)
 
         .then()
-                .log().status()
-                .log().body()
-                .statusCode(404)
+                .spec(getUnsuccessResponseSpec)
                 .extract().as(UserModel.class));
 
         step("Проверяем ответ, что ответ пустой (поля == null, id = 0)", ()-> {

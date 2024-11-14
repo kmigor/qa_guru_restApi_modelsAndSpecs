@@ -16,6 +16,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static specs.Specs.*;
 
 public class PostTests extends TestBase {
 
@@ -30,20 +31,12 @@ public class PostTests extends TestBase {
         loginRequestModel.setPassword("Astley");
 
         LoginErrorResponseModel loginErrorResponseModel = step("Делаем запрос на авторизацию несуществующим пользователем", () ->
-                given()
-                        .filter(withCustomTemplates())
+                given(postRequestSpec)
                         .body(loginRequestModel)
-                        .contentType(JSON)
-
-                        .when()
-                        .log().uri()
-                        .log().body()
                         .post("/login")
 
                         .then()
-                        .log().status()
-                        .log().body()
-                        .statusCode(400)
+                        .spec(postLoginResponseSpec)
                         .extract().as(LoginErrorResponseModel.class));
 
         step("Проверяем ответ, что пользователь не найден", ()-> {
@@ -62,19 +55,12 @@ public class PostTests extends TestBase {
 
         RegisterResponseModel registerResponseModel = step("Делаем запрос на регистрацию", () ->
 
-        given()
-                .filter(withCustomTemplates())
+        given(postRequestSpec)
                 .body(registerRequestModel)
-                .contentType(JSON)
-        .when()
-                .log().uri()
-                .log().body()
                 .post("/register")
 
         .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
+                .spec(postRegisterResponseSpec)
                 .extract().as(RegisterResponseModel.class));
 
         step("Проверяем валидность ответа (id имеет тип int, Токен является строкой из 17 символов)", ()-> {
