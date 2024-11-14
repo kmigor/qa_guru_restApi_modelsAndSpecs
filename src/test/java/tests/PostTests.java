@@ -1,5 +1,6 @@
 package tests;
 
+import io.qameta.allure.restassured.AllureRestAssured;
 import models.LoginErrorResponseModel;
 import models.LoginRequestModel;
 import models.RegisterRequestModel;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 
+import static helpers.CustomAllureListener.withCustomTemplates;
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,24 +29,27 @@ public class PostTests extends TestBase {
         loginRequestModel.setUsername("Rick");
         loginRequestModel.setPassword("Astley");
 
-        LoginErrorResponseModel loginErrorResponseModel =
+        LoginErrorResponseModel loginErrorResponseModel = step("Делаем запрос на авторизацию несуществующим пользователем", () ->
+                given()
+                        .filter(withCustomTemplates())
+                        .body(loginRequestModel)
+                        .contentType(JSON)
 
-        given()
-                .body(loginRequestModel)
-                .contentType(JSON)
-        .when()
-                .log().uri()
-                .log().body()
-                .post("/login")
+                        .when()
+                        .log().uri()
+                        .log().body()
+                        .post("/login")
 
-        .then()
-                .log().status()
-                .log().body()
-                .statusCode(400)
-                .extract().as(LoginErrorResponseModel.class);
+                        .then()
+                        .log().status()
+                        .log().body()
+                        .statusCode(400)
+                        .extract().as(LoginErrorResponseModel.class));
 
-        assertThat(loginErrorResponseModel.getError())
-                .isEqualTo("user not found");
+        step("Проверяем ответ, что пользователь не найден", ()-> {
+            assertThat(loginErrorResponseModel.getError())
+                    .isEqualTo("user not found");
+        });
     }
 
     @Test
@@ -54,9 +60,10 @@ public class PostTests extends TestBase {
         registerRequestModel.setEmail("emma.wong@reqres.in");
         registerRequestModel.setPassword("Astley");
 
-        RegisterResponseModel registerResponseModel =
+        RegisterResponseModel registerResponseModel = step("Делаем запрос на регистрацию", () ->
 
         given()
+                .filter(withCustomTemplates())
                 .body(registerRequestModel)
                 .contentType(JSON)
         .when()
@@ -68,12 +75,14 @@ public class PostTests extends TestBase {
                 .log().status()
                 .log().body()
                 .statusCode(200)
-                .extract().as(RegisterResponseModel.class);
+                .extract().as(RegisterResponseModel.class));
 
-        assertThat(registerResponseModel.getId())
+        step("Проверяем валидность ответа (id имеет тип int, Токен является строкой из 17 символов)", ()-> {
+            assertThat(registerResponseModel.getId())
                 .asInt();
-        assertThat(registerResponseModel.getToken())
+            assertThat(registerResponseModel.getToken())
                 .asString()
                 .hasSize(17);
+        });
     }
 }

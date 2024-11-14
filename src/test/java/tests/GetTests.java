@@ -1,10 +1,13 @@
 package tests;
 
+import io.qameta.allure.restassured.AllureRestAssured;
 import models.UserListResponseModel;
 import models.UserModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static helpers.CustomAllureListener.withCustomTemplates;
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -15,10 +18,10 @@ public class GetTests extends TestBase {
     @DisplayName("Проверка получения списка пользователей")
     void getUsersListTest() {
 
-        UserListResponseModel userListResponseModel =
+        UserListResponseModel userListResponseModel = step("Делаем запрос получения списка пользователей", () ->
 
         given()
-
+                .filter(withCustomTemplates())
         .when()
                 .log().uri()
                 .get("/users")
@@ -27,12 +30,14 @@ public class GetTests extends TestBase {
                 .log().status()
                 .log().body()
                 .statusCode(200)
-                .extract().as(UserListResponseModel.class);
+                .extract().as(UserListResponseModel.class));
 
-        assertThat(userListResponseModel.getTotal())
+        step("Проверяем, что в ответе пришел список из 12 человек, и почту первого в списке", ()-> {
+            assertThat(userListResponseModel.getTotal())
                 .isEqualTo(12);
-        assertThat(userListResponseModel.getData().get(0).getEmail())
+            assertThat(userListResponseModel.getData().get(0).getEmail())
                 .isEqualTo("george.bluth@reqres.in");
+        });
     }
 
     @Test
@@ -47,9 +52,9 @@ public class GetTests extends TestBase {
         expectedModel.getSupport().setUrl("https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral");
         expectedModel.getSupport().setText("Tired of writing endless social media content? Let Content Caddy generate it for you.");
 
-        UserModel actualModel =
+        UserModel actualModel = step("Делаем запрос на получения первого в списке человека", () ->
         given()
-
+                .filter(withCustomTemplates())
         .when()
                 .log().uri()
                 .get("/users/" + 1)
@@ -57,8 +62,9 @@ public class GetTests extends TestBase {
         .then()
                 .log().status()
                 .log().body()
-                .extract().as(UserModel.class);
+                .extract().as(UserModel.class));
 
+        step("Проверяем каждое поле первого человека", ()-> {
         assertThat(actualModel.getData().getId())
                 .isEqualTo(expectedModel.getData().getId());
         assertThat(actualModel.getData().getEmail())
@@ -69,13 +75,15 @@ public class GetTests extends TestBase {
                 .isEqualTo(expectedModel.getData().getLast_name());
         assertThat(actualModel.getData().getAvatar())
                 .isEqualTo(expectedModel.getData().getAvatar());
+        });
     }
 
     @Test
     @DisplayName("Проверка получения несуществующего пользователя")
     void getUserByIdNotFoundTest() {
+        UserModel actualUser = step("Делаем запрос человека с несуществующим id", () ->
         given()
-
+                .filter(withCustomTemplates())
         .when()
                 .log().uri()
                 .get("/users/" + 0)
@@ -83,6 +91,20 @@ public class GetTests extends TestBase {
         .then()
                 .log().status()
                 .log().body()
-                .statusCode(404);
+                .statusCode(404)
+                .extract().as(UserModel.class));
+
+        step("Проверяем ответ, что ответ пустой (поля == null, id = 0)", ()-> {
+            assertThat(actualUser.getData().getEmail())
+                    .isNull();
+            assertThat(actualUser.getData().getId())
+                    .isEqualTo(0);
+            assertThat(actualUser.getData().getFirst_name())
+                    .isNull();
+            assertThat(actualUser.getData().getLast_name())
+                    .isNull();
+            assertThat(actualUser.getData().getAvatar())
+                    .isNull();
+        });
     }
 }
