@@ -15,7 +15,6 @@ import static specs.Specs.*;
 
 public class PostTests extends TestBase {
 
-
     @Test
     @DisplayName("Проверка залогиниться несуществующим пользователем.")
     void postLoginErrorTest() {
@@ -50,7 +49,7 @@ public class PostTests extends TestBase {
                 given(postRequestSpec).body(registerRequestModel)
                         .post("/register")
                         .then()
-                        .spec(postRegisterResponseSpec)
+                        .spec(SuccessResponseSpec)
                         .extract().as(RegisterResponseModel.class));
 
         step("Проверяем валидность ответа (id имеет тип int, Токен является строкой из 17 символов)", () -> {

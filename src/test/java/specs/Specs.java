@@ -17,7 +17,7 @@ public class Specs {
             .log().uri()
             .log().headers();
 
-    public static ResponseSpecification getSuccessResponseSpec = new ResponseSpecBuilder()
+    public static ResponseSpecification SuccessResponseSpec = new ResponseSpecBuilder()
             .expectStatusCode(200)
             .log(STATUS)
             .log(BODY)
@@ -37,12 +37,6 @@ public class Specs {
 
     public static ResponseSpecification postLoginResponseSpec = new ResponseSpecBuilder()
             .expectStatusCode(400)
-            .log(STATUS)
-            .log(BODY)
-            .build();
-
-    public static ResponseSpecification postRegisterResponseSpec = new ResponseSpecBuilder()
-            .expectStatusCode(200)
             .log(STATUS)
             .log(BODY)
             .build();

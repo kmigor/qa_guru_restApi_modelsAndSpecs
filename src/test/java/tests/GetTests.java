@@ -21,7 +21,7 @@ public class GetTests extends TestBase {
                 given(getRequestSpec)
                         .get("/users")
                         .then()
-                        .spec(getSuccessResponseSpec)
+                        .spec(SuccessResponseSpec)
                         .extract().as(UserListResponseModel.class));
 
         step("Проверяем, что в ответе пришел список из 12 человек, и почту первого в списке", () -> {
@@ -46,7 +46,7 @@ public class GetTests extends TestBase {
                 given(getRequestSpec)
                         .get("/users/" + 1)
                         .then()
-                        .spec(getSuccessResponseSpec)
+                        .spec(SuccessResponseSpec)
                         .extract().as(UserModel.class));
 
         step("Проверяем каждое поле первого человека", () -> {
