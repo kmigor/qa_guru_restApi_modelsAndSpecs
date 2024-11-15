@@ -18,19 +18,15 @@ public class GetTests extends TestBase {
     void getUsersListTest() {
 
         UserListResponseModel userListResponseModel = step("Делаем запрос получения списка пользователей", () ->
+                given(getRequestSpec)
+                        .get("/users")
+                        .then()
+                        .spec(getSuccessResponseSpec)
+                        .extract().as(UserListResponseModel.class));
 
-        given(getRequestSpec)
-                .get("/users")
-
-        .then()
-                .spec(getSuccessResponseSpec)
-                .extract().as(UserListResponseModel.class));
-
-        step("Проверяем, что в ответе пришел список из 12 человек, и почту первого в списке", ()-> {
-            assertThat(userListResponseModel.getTotal())
-                .isEqualTo(12);
-            assertThat(userListResponseModel.getData().get(0).getEmail())
-                .isEqualTo("george.bluth@reqres.in");
+        step("Проверяем, что в ответе пришел список из 12 человек, и почту первого в списке", () -> {
+            assertThat(userListResponseModel.getTotal()).isEqualTo(12);
+            assertThat(userListResponseModel.getData().get(0).getEmail()).isEqualTo("george.bluth@reqres.in");
         });
     }
 
@@ -47,24 +43,18 @@ public class GetTests extends TestBase {
         expectedModel.getSupport().setText("Tired of writing endless social media content? Let Content Caddy generate it for you.");
 
         UserModel actualModel = step("Делаем запрос на получения первого в списке человека", () ->
-        given(getRequestSpec)
-                .get("/users/" + 1)
+                given(getRequestSpec)
+                        .get("/users/" + 1)
+                        .then()
+                        .spec(getSuccessResponseSpec)
+                        .extract().as(UserModel.class));
 
-        .then()
-                .spec(getSuccessResponseSpec)
-                .extract().as(UserModel.class));
-
-        step("Проверяем каждое поле первого человека", ()-> {
-        assertThat(actualModel.getData().getId())
-                .isEqualTo(expectedModel.getData().getId());
-        assertThat(actualModel.getData().getEmail())
-                .isEqualTo(expectedModel.getData().getEmail());
-        assertThat(actualModel.getData().getFirst_name())
-                .isEqualTo(expectedModel.getData().getFirst_name());
-        assertThat(actualModel.getData().getLast_name())
-                .isEqualTo(expectedModel.getData().getLast_name());
-        assertThat(actualModel.getData().getAvatar())
-                .isEqualTo(expectedModel.getData().getAvatar());
+        step("Проверяем каждое поле первого человека", () -> {
+            assertThat(actualModel.getData().getId()).isEqualTo(expectedModel.getData().getId());
+            assertThat(actualModel.getData().getEmail()).isEqualTo(expectedModel.getData().getEmail());
+            assertThat(actualModel.getData().getFirst_name()).isEqualTo(expectedModel.getData().getFirst_name());
+            assertThat(actualModel.getData().getLast_name()).isEqualTo(expectedModel.getData().getLast_name());
+            assertThat(actualModel.getData().getAvatar()).isEqualTo(expectedModel.getData().getAvatar());
         });
     }
 
@@ -72,24 +62,18 @@ public class GetTests extends TestBase {
     @DisplayName("Проверка получения несуществующего пользователя")
     void getUserByIdNotFoundTest() {
         UserModel actualUser = step("Делаем запрос человека с несуществующим id", () ->
-        given(getRequestSpec)
-                .get("/users/" + 0)
+                given(getRequestSpec)
+                        .get("/users/" + 0)
+                        .then()
+                        .spec(getUnsuccessResponseSpec)
+                        .extract().as(UserModel.class));
 
-        .then()
-                .spec(getUnsuccessResponseSpec)
-                .extract().as(UserModel.class));
-
-        step("Проверяем ответ, что ответ пустой (поля == null, id = 0)", ()-> {
-            assertThat(actualUser.getData().getEmail())
-                    .isNull();
-            assertThat(actualUser.getData().getId())
-                    .isEqualTo(0);
-            assertThat(actualUser.getData().getFirst_name())
-                    .isNull();
-            assertThat(actualUser.getData().getLast_name())
-                    .isNull();
-            assertThat(actualUser.getData().getAvatar())
-                    .isNull();
+        step("Проверяем ответ, что ответ пустой (поля == null, id = 0)", () -> {
+            assertThat(actualUser.getData().getEmail()).isNull();
+            assertThat(actualUser.getData().getId()).isEqualTo(0);
+            assertThat(actualUser.getData().getFirst_name()).isNull();
+            assertThat(actualUser.getData().getLast_name()).isNull();
+            assertThat(actualUser.getData().getAvatar()).isNull();
         });
     }
 }

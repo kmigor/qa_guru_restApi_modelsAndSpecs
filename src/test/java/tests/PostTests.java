@@ -29,14 +29,12 @@ public class PostTests extends TestBase {
                 given(postRequestSpec)
                         .body(loginRequestModel)
                         .post("/login")
-
                         .then()
                         .spec(postLoginResponseSpec)
                         .extract().as(LoginErrorResponseModel.class));
 
-        step("Проверяем ответ, что пользователь не найден", ()-> {
-            assertThat(loginErrorResponseModel.getError())
-                    .isEqualTo("user not found");
+        step("Проверяем ответ, что пользователь не найден", () -> {
+            assertThat(loginErrorResponseModel.getError()).isEqualTo("user not found");
         });
     }
 
@@ -49,21 +47,15 @@ public class PostTests extends TestBase {
         registerRequestModel.setPassword("Astley");
 
         RegisterResponseModel registerResponseModel = step("Делаем запрос на регистрацию", () ->
+                given(postRequestSpec).body(registerRequestModel)
+                        .post("/register")
+                        .then()
+                        .spec(postRegisterResponseSpec)
+                        .extract().as(RegisterResponseModel.class));
 
-        given(postRequestSpec)
-                .body(registerRequestModel)
-                .post("/register")
-
-        .then()
-                .spec(postRegisterResponseSpec)
-                .extract().as(RegisterResponseModel.class));
-
-        step("Проверяем валидность ответа (id имеет тип int, Токен является строкой из 17 символов)", ()-> {
-            assertThat(registerResponseModel.getId())
-                .asInt();
-            assertThat(registerResponseModel.getToken())
-                .asString()
-                .hasSize(17);
+        step("Проверяем валидность ответа (id имеет тип int, Токен является строкой из 17 символов)", () -> {
+            assertThat(registerResponseModel.getId()).asInt();
+            assertThat(registerResponseModel.getToken()).asString().hasSize(17);
         });
     }
 }
